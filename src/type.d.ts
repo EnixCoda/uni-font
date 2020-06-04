@@ -1,3 +1,6 @@
+declare module "@zeit-ui/react-icons";
+declare module "@zeit-ui/react";
+
 type Characters =
   | "0"
   | "1"

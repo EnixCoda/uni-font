@@ -1,21 +1,23 @@
-import * as React from "react";
-import "./styles.css";
 import {
-  CssBaseline,
   Button,
-  Text,
-  Input,
-  Spacer,
-  Tooltip,
   Card,
+  Checkbox,
+  CssBaseline,
+  Input,
+  Row,
+  Spacer,
   Table,
-  Row
+  Text,
+  Tooltip,
 } from "@zeit-ui/react";
 import { Check, Copy } from "@zeit-ui/react-icons";
-import { variants, getVariant, normals } from "./variants";
+import * as React from "react";
+import "./styles.css";
+import { getVariant, normals, variants } from "./variants";
 
 export default function App() {
   const [value, setValue] = React.useState("");
+  const [copyMode, setCopyMode] = React.useState<"UTF-16" | "UTF-32">("UTF-32");
   const chars = React.useMemo(() => getChars(value), [value]);
 
   return (
@@ -27,7 +29,7 @@ export default function App() {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            maxHeight: "100vh"
+            maxHeight: "100vh",
           }}
         >
           <Text h1>UniFont</Text>
@@ -35,7 +37,9 @@ export default function App() {
             <Input
               placeholder="a-z, A-Z, 0-9"
               value={value}
-              onChange={e => setValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setValue(e.target.value)
+              }
               autoFocus
             >
               Original text
@@ -55,8 +59,18 @@ export default function App() {
           <Spacer />
           {value && (
             <Card shadow style={{ flex: 1, overflow: "scroll" }}>
+              <Row align="center" justify="end" gap={0.8}>
+                <Checkbox
+                  value={copyMode === "UTF-16"}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setCopyMode(e.target.checked ? "UTF-16" : "UTF-32")
+                  }
+                >
+                  Copy as UTF-16
+                </Checkbox>
+              </Row>
               <Table
-                data={variants.map(variant => {
+                data={variants.map((variant) => {
                   const transformed = formatInVariant(
                     chars,
                     getVariant(variant)
@@ -68,7 +82,7 @@ export default function App() {
                         <Text size={20}>{transformed}</Text>
                       </Tooltip>
                     ),
-                    action: <CopyButton content={transformed} />
+                    action: <CopyButton content={transformed} />,
                   };
                 })}
               >
@@ -120,7 +134,7 @@ function copyToClipboard(content: string) {
 
 function formatInVariant(input: string[], variant: string[]) {
   return input
-    .map(char => {
+    .map((char) => {
       const index = normals.indexOf(char);
       if (index === -1) return char;
       return variant[index];
@@ -146,7 +160,7 @@ function formatUTF(char: string): string | undefined {
     ? format(char.codePointAt(0) || 0)
     : `${format(char.codePointAt(0) || 0)}(${char
         .split("")
-        .map(char => getUnicode(char))
+        .map((char) => getUnicode(char))
         .join("")})`;
 }
 

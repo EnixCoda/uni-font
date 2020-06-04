@@ -1,16 +1,25 @@
 {
-    "include": [
-        "./src/*"
+  "include": [
+    "src"
+  ],
+  "compilerOptions": {
+    "target": "ES6",
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": [
+      "dom",
+      "es2015",
+      "ES2017.String"
     ],
-    "compilerOptions": {
-        "target": "ES6",
-        "strict": true,
-        "esModuleInterop": true,
-        "lib": [
-            "dom",
-            "es2015",
-            "ES2017.String"
-        ],
-        "jsx": "react"
-    }
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "isolatedModules": true
+  }
 }
