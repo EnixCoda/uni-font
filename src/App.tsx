@@ -99,6 +99,13 @@ export default function App() {
                     );
                   })}
                 </Card>
+                <Row
+                  style={{ margin: 8 }}
+                  align="middle"
+                  justify="center"
+                >
+                  <Text small>Made by <a href="https://github.com/EnixCoda/">EnixCoda</a></Text>
+                </Row>
               </>
             )}
           </div>
