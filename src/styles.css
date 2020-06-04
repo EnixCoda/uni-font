@@ -1,0 +1,22 @@
+.head {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.variant {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+}
+.variant:hover {
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.72);
+}

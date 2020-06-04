@@ -1,16 +1,15 @@
 import {
-  Button,
   Card,
   Checkbox,
   CssBaseline,
   Input,
   Row,
-  Spacer,
-  Table,
   Text,
   Tooltip,
+  useClipboard,
+  useToasts,
+  ZeitProvider,
 } from "@zeit-ui/react";
-import { Check, Copy } from "@zeit-ui/react-icons";
 import * as React from "react";
 import "./styles.css";
 import { getVariant, normals, variants } from "./variants";
@@ -21,31 +20,44 @@ export default function App() {
   const chars = React.useMemo(() => getChars(value), [value]);
 
   return (
-    <CssBaseline>
-      <Row style={{ width: "100%" }} justify="center">
-        <div
-          style={{
-            maxWidth: 600,
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            maxHeight: "100vh",
-          }}
-        >
-          <Text h1>UniFont</Text>
-          <Card shadow>
-            <Input
-              placeholder="a-z, A-Z, 0-9"
-              value={value}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setValue(e.target.value)
-              }
-              autoFocus
-            >
-              Original text
-            </Input>
-            {/* <Spacer /> */}
-            {/* {value && (
+    <ZeitProvider>
+      <CssBaseline>
+        <Row style={{ width: "100%" }} justify="center">
+          <div
+            style={{
+              maxWidth: 600,
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              maxHeight: "100vh",
+              padding: 8,
+            }}
+          >
+            <div className="head">
+              <Text
+                h1
+                style={{
+                  marginRight: 24,
+                  textDecoration: "underline",
+                }}
+              >
+                UniFont
+              </Text>
+              <Input
+                placeholder="a-z, A-Z, 0-9"
+                value={value}
+                style={{}}
+                size="large"
+                width="100%"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setValue(e.target.value)
+                }
+                autoFocus
+              ></Input>
+            </div>
+            {/* <Card shadow>
+              <Spacer />
+              {value && (
               <Description
                 title="Your input(hover to inspect unicode)"
                 content={
@@ -54,82 +66,76 @@ export default function App() {
                   </Text>
                 }
               />
-            )} */}
-          </Card>
-          <Spacer />
-          {value && (
-            <Card shadow style={{ flex: 1, overflow: "scroll" }}>
-              <Row align="center" justify="end" gap={0.8}>
-                <Checkbox
-                  value={copyMode === "UTF-16"}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setCopyMode(e.target.checked ? "UTF-16" : "UTF-32")
-                  }
+            )}
+            </Card> */}
+            {value && (
+              <>
+                <Row
+                  style={{ margin: 8 }}
+                  align="middle"
+                  justify="space-between"
+                  gap={0.8}
                 >
-                  Copy as UTF-16
-                </Checkbox>
-              </Row>
-              <Table
-                data={variants.map((variant) => {
-                  const transformed = formatInVariant(
-                    chars,
-                    getVariant(variant)
-                  );
-                  return {
-                    variant,
-                    preview: (
-                      <Tooltip text={variant}>
-                        <Text size={20}>{transformed}</Text>
-                      </Tooltip>
-                    ),
-                    action: <CopyButton content={transformed} />,
-                  };
-                })}
-              >
-                <Table.Column label="Preview" prop="preview" />
-                <Table.Column width={120} label="Action" prop="action" />
-              </Table>
-            </Card>
-          )}
-        </div>
-      </Row>
-    </CssBaseline>
+                  <Text small>Tap to copy</Text>
+                  <Checkbox
+                    value={copyMode === "UTF-16"}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setCopyMode(e.target.checked ? "UTF-16" : "UTF-32")
+                    }
+                  >
+                    Copy as UTF-16
+                  </Checkbox>
+                </Row>
+                <Card shadow style={{ flex: 1, overflow: "scroll" }}>
+                  {variants.map((variant) => {
+                    const transformed = formatInVariant(
+                      chars,
+                      getVariant(variant)
+                    );
+                    return (
+                      <CopyContainer
+                        content={transformed}
+                        hint={`${transformed} is copied!`}
+                      >
+                        <div key={variant} className="variant">
+                          <Text span size={24}>
+                            {transformed}
+                          </Text>
+                          <Text small type="secondary">
+                            {variant}
+                          </Text>
+                        </div>
+                      </CopyContainer>
+                    );
+                  })}
+                </Card>
+              </>
+            )}
+          </div>
+        </Row>
+      </CssBaseline>
+    </ZeitProvider>
   );
 }
 
-function CopyButton({ content }: { content: string }) {
-  const [icon, setIcon] = React.useState(() => <Copy />);
+function CopyContainer({
+  content,
+  children,
+  hint = `Copied to clipboard!`,
+}: React.PropsWithChildren<{ content: string; hint?: React.ReactNode }>) {
+  const { copy: copyToClipboard } = useClipboard();
+  const [, setToast] = useToasts();
   return (
-    <Button
-      icon={icon}
+    <div
+      style={{ cursor: "pointer" }}
       onClick={() => {
         copyToClipboard(content);
-        setIcon(<Check />);
-        setTimeout(() => {
-          setIcon(<Copy />);
-        }, 500);
+        setToast({ text: hint });
       }}
-      auto
-      size="small"
     >
-      Copy
-    </Button>
+      {children}
+    </div>
   );
-}
-
-function copyToClipboard(content: string) {
-  const el = document.createElement("textarea");
-  el.value = content;
-
-  el.style.position = "fixed";
-  el.style.top = "100%";
-  el.style.left = "100%";
-  document.body.appendChild(el);
-
-  el.select();
-  document.execCommand("copy");
-
-  document.body.removeChild(el);
 }
 
 function formatInVariant(input: string[], variant: string[]) {
@@ -140,6 +146,16 @@ function formatInVariant(input: string[], variant: string[]) {
       return variant[index];
     })
     .join("");
+}
+
+function getSurrogatePair(astralCodePoint: number) {
+  let highSurrogate = Math.floor((astralCodePoint - 0x10000) / 0x400) + 0xd800;
+  let lowSurrogate = ((astralCodePoint - 0x10000) % 0x400) + 0xdc00;
+  return [highSurrogate, lowSurrogate];
+}
+
+function getAstralCodePoint(highSurrogate: number, lowSurrogate: number) {
+  return (highSurrogate - 0xd800) * 0x400 + lowSurrogate - 0xdc00 + 0x10000;
 }
 
 function Unicode({ raw }: { raw: string }) {
