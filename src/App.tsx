@@ -74,7 +74,7 @@ export default function App() {
                   justify="space-between"
                   gap={0.8}
                 >
-                  <Text small>Tap to copy</Text>
+                  <Text small>Tap to copy. And paste with font preserved.</Text>
                 </Row>
                 <Card shadow style={{ flex: 1, overflow: "scroll" }}>
                   {variants.map((variant) => {
