@@ -85,7 +85,9 @@ export default function App() {
                     return (
                       <CopyContainer
                         content={transformed}
-                        hint={`${transformed} is copied!`}
+                        hint={`${
+                          transformed.length > 32 ? variant : transformed
+                        } is copied!`}
                       >
                         <div key={variant} className="variant">
                           <Text span size={24}>
