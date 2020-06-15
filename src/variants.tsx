@@ -14,13 +14,13 @@ const nameMap = {
   FrakturNormal: 10,
   FrakturBold: 11,
   MonoSpaceNormal: 12,
-  DoubleStruckBold: 13
+  DoubleStruckBold: 13,
 };
 
 type Variant = keyof typeof nameMap;
 
 const variantMap: string[][] = [];
-const toNormal: {
+export const toNormal: {
   [input: string]: string;
 } = {};
 const normalToVariants: {
@@ -29,18 +29,23 @@ const normalToVariants: {
 
 export const normals: string[] = [];
 
-table.split("\n").forEach(line => {
-  const variantsOfChar = line.split("	");
-  const [charNormal] = variantsOfChar;
-  normals.push(charNormal);
-  normalToVariants[charNormal] = variantsOfChar;
-  variantsOfChar.forEach((variant, i) => {
-    toNormal[variant] = charNormal;
-    if (!variantMap[i]) variantMap[i] = [];
-    const slot = variantMap[i];
-    if (slot) slot.push(variant);
+function parseTable() {
+  table.split("\n").forEach((line) => {
+    const variantsOfChar = line.split("	");
+    const [charNormal] = variantsOfChar;
+    normals.push(charNormal);
+    normalToVariants[charNormal] = variantsOfChar;
+    variantsOfChar.forEach((variant, i) => {
+      toNormal[variant] = charNormal;
+      if (!variantMap[i]) variantMap[i] = [];
+      const slot = variantMap[i];
+      if (slot) slot.push(variant);
+    });
   });
-});
+}
+
+parseTable();
+
 export function getVariant(variant: string) {
   return variantMap[nameMap[variant as Variant]];
 }

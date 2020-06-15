@@ -11,11 +11,18 @@ import {
 import * as React from "react";
 import { getChars } from "./getSurrogatePair";
 import "./styles.css";
-import { getVariant, normals, variants } from "./variants";
+import { getVariant, normals, toNormal, variants } from "./variants";
 
 export default function App() {
   const [value, setValue] = React.useState("");
-  const chars = React.useMemo(() => getChars(value), [value]);
+  const parsed = React.useMemo(() => {
+    let parsed = "";
+    for (const char of value) {
+      parsed += toNormal[char] || char;
+    }
+    return parsed;
+  }, [value]);
+  const chars = React.useMemo(() => getChars(parsed), [parsed]);
 
   return (
     <ZeitProvider>
@@ -51,22 +58,22 @@ export default function App() {
                   setValue(e.target.value)
                 }
                 autoFocus
-              ></Input>
+              />
             </div>
             {/* <Card shadow>
               <Spacer />
-              {value && (
+              {parsed && (
               <Description
                 title="Your input(hover to inspect unicode)"
                 content={
                   <Text h4>
-                    <Unicode raw={value} />
+                    <Unicode raw={parsed} />
                   </Text>
                 }
               />
             )}
             </Card> */}
-            {value && (
+            {parsed && (
               <>
                 <Row
                   style={{ margin: 8 }}
