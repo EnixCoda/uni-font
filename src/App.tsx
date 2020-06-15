@@ -81,7 +81,7 @@ export default function App() {
                   justify="space-between"
                   gap={0.8}
                 >
-                  <Text small>Tap to copy. And paste with font preserved.</Text>
+                  <Text small>Tap to copy. And paste anywhere with the font reserved.</Text>
                 </Row>
                 <Card shadow style={{ flex: 1, overflow: "scroll" }}>
                   {variants.map((variant) => {
@@ -108,6 +108,13 @@ export default function App() {
                     );
                   })}
                 </Card>
+                <Row
+                  style={{ margin: 8 }}
+                  align="middle"
+                  justify="center"
+                >
+                  <Text small>Made by <a href="https://github.com/EnixCoda/">EnixCoda</a></Text>
+                </Row>
               </>
             )}
           </div>
