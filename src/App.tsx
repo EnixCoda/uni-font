@@ -83,7 +83,7 @@ export default function App() {
                 >
                   <Text small>Tap to copy. And paste anywhere with the font reserved.</Text>
                 </Row>
-                <Card shadow style={{ flex: 1, overflow: "scroll" }}>
+                <Card shadow style={{ flex: 1, overflow: "auto" }}>
                   {variants.map((variant) => {
                     const transformed = formatInVariant(
                       chars,
